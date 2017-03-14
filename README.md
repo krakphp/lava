@@ -9,11 +9,10 @@ Micro-framework with macro potential.
 
 use Krak\Lava;
 
-$app = new Krak\Lava\App();
+$app = new Lava\App();
 $app->with([
     new Lava\Package\EnvPackage(),
     new Lava\Package\ExceptionHandlerPackage(),
-    new Lava\Package\RegisterPackagesPackage(),
 ]);
 $app->routes(function($r) {
     $r->with('response_factory', 'json');
