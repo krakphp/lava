@@ -8,15 +8,56 @@ use Psr\Http\Message\ResponseInterface;
 
 use function iter\reduce;
 
-function routeMw(Lava\App $c) {
-    return function($req, $next) use ($c) {
-        $compiler = $c[Http\RouteCompiler::class];
-        $routes = $compiler->compileRoutes($c[Http\Route\RouteGroup::class], '/');
-        $dispatcher = $c[Http\DispatcherFactory::class]->createDispatcher($routes);
+function expectsContentType() {
+    return function($req, $next) {
+        $matched = $req->getAttribute('_matched_route');
+        $expects = Http\Route\attributesTreeFirstAttribute($matched->route, 'expects');
+        if (!$expects) {
+            return $next($req);
+        }
+
+        $ctype = $req->getHeader('Content-Type');
+        if (!$ctype || $ctype[0] != $expects) {
+            return $next->abort(415, 'unsupported_media_type', 'Expected ' . $expects)->render($req);
+        }
+
+        return $next($req);
+    };
+}
+
+function parseRequestJson() {
+    return function($req, $next) {
+        $ctype = $req->getHeaderLine('Content-Type');
+
+        if ($ctype == 'application/json') {
+            $req = $req->withParsedBody(json_decode($req->getBody(), true));
+        }
+
+        return $next($req);
+    };
+}
+
+function routeMw() {
+    return function($req, $next) {
+        $app = $next->getApp();
+        $compiler = $app[Http\RouteCompiler::class];
+        $routes = $compiler->compileRoutes($app[Http\Route\RouteGroup::class], '/');
+        $dispatcher = $app[Http\DispatcherFactory::class]->createDispatcher($routes);
         $res = $dispatcher->dispatch($req);
         switch ($res->status_code) {
-        case 404: throw new Http\Exception\HttpException(404, 'Not Found');
-        case 405: throw new Http\Exception\HttpException(405, 'Method not allowed', ['Allow' => implode(', ', $res->allowed_methods)]);
+        case 404:
+            return $app->abort(404, 'not_found', 'Page not found.', [
+                'endpoint' => $req->getUri()->getPath(),
+                'method' => $req->getMethod(),
+            ])->render($req);
+        case 405:
+            $allowed = implode(', ', $res->allowed_methods);
+            return $app->abort(405, 'method_not_allowed', 'The method is not allowed on this endpoint', [
+                'endpoint' => $req->getUri()->getPath(),
+                'method' => $req->getMethod(),
+                'allowed_methods' => $allowed,
+            ])->render($req)
+            ->withAddedHeader('Allow', $allowed);
         }
 
         $req = $req->withAttribute('_matched_route', $res->matched_route);
@@ -34,8 +75,19 @@ function routingMiddlewareMw() {
     };
 }
 
-function invokeMw(Lava\App $app) {
-    return function($req, $next) use ($app) {
+function wrapExceptionsToErrors() {
+    return function($req, $next) {
+        try {
+            return $next($req);
+        } catch (\Exception $e) {
+            return $next->getApp()->renderError(Lava\Error::createFromException($e), $req);
+        }
+    };
+}
+
+function invokeMw() {
+    return function($req, $next) {
+        $app = $next->getApp();
         $matched_route = $req->getAttribute('_matched_route');
         $invoke_action = $app->compose([$app['stacks.invoke_action']]);
         $resp = $invoke_action($matched_route, $req);

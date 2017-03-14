@@ -3,6 +3,7 @@
 namespace Krak\Lava\MarshalResponse;
 
 use Krak\Http;
+use Krak\Lava;
 use Psr\Http\Message\Stream;
 use function Krak\Lava\Util\isTuple;
 
@@ -76,13 +77,23 @@ function stringMarshalResponse($html = true) {
     };
 }
 
-function jsonMarshalResponse($options = 0) {
-    return function($result, $req, $next) use ($options) {
-        return $next->response(
-            200,
-            ['Content-Type' => 'application/json'],
-            json_encode($result, $options)
-        );
+function jsonMarshalResponse() {
+    return function($result, $req, $next) {
+        return $next->response()->json(200, [], $result);
+    };
+}
+
+function errorMarshalResponse() {
+    return function($result, $req, $next) {
+        $app = $next->getApp();
+
+        if ($result instanceof Lava\Error) {
+            return $app->renderError($result, $req);
+        } else if ($result instanceof Lava\Error\WrappedError) {
+            return $result->render($req);
+        } else {
+            return $next($result, $req);
+        }
     };
 }
 

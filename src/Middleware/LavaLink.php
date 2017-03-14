@@ -10,6 +10,10 @@ class LavaLink extends Mw\Link\ContainerLink
         return $this->getContext()->getApp();
     }
 
+    public function abort(...$args) {
+        return $this->getApp()->abort(...$args);
+    }
+
     public function response(...$args) {
         return $this->getApp()->response(...$args);
     }

@@ -6,6 +6,7 @@ use ArrayObject;
 use Krak\Cargo;
 use Krak\Http;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Evenement\EventEmitterInterface;
 
 class App extends Cargo\Container\ContainerDecorator implements EventEmitterInterface
@@ -77,8 +78,19 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
         return $compose($mw);
     }
 
+    public function abort(...$args) {
+        return new Error\WrappedError(new Error(...$args), $this);
+    }
+
+    public function renderError(Error $err, ServerRequestInterface $req = null) {
+        $render = $this->compose([$this['stacks.render_error']]);
+        return $render($err, $req ?: $this[ServerRequestInterface::class])
+            ->withStatus($err->status);
+    }
+
     public function serve() {
         $this->bootstrap();
+        $this->registerPackages();
         $this->freeze();
 
         $server = $this[Http\Server::class];
@@ -107,5 +119,31 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
 
     public function terminate() {
         $this->emit(Events::TERMINATE, [$this]);
+    }
+
+    public function registerPackages() {
+        if ($this['frozen']) {
+            return;
+        }
+
+        foreach ($this['packages'] as $package) {
+            $match = false;
+            if ($package instanceof Bootstrap) {
+                $match = true;
+            }
+            if ($package instanceof Cargo\ServiceProvider) {
+                Cargo\register($this, $package);
+                $match = true;
+            }
+            if ($package instanceof Package) {
+                $package->with($this);
+                $match = true;
+            }
+
+            if (!$match) {
+                $type = Util\typeToString($package);
+                throw new InvalidArgumentException("Packages must be an instance of Krak\Lava\{Package, Bootstrap} or Krak\Cargo\ServiceProvider. $type was given");
+            }
+        }
     }
 }

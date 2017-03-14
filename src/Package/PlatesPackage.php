@@ -4,91 +4,72 @@ namespace Krak\Lava\Package;
 
 use Krak\Lava;
 use Krak\Cargo;
+use League\Plates;
 
 class PlatesPackage extends Lava\AbstractPackage
 {
+    public function bootstrap(Lava\App $app) {
+        $app['plates.views_path'] = $app->path('views');
+    }
+
+    public function with(Lava\App $app) {
+        $app['stacks.http']->push(function($req, $next) {
+            $app = $next->getApp();
+            $plates = $app[Plates\Engine::class];
+            $plates->addData([
+                'request' => $req,
+                'app' => $app,
+            ]);
+            return $next($req);
+        });
+        $app['stacks.marshal_response']->push(function($result, $req, $next) {
+            $app = $next->getApp();
+            $matches = Lava\Util\isTuple($result, "string", "array");
+            if (!$matches) {
+                return $next($result, $req);
+            }
+
+            list($template, $data) = $result;
+            return $next->response()->html(
+                200,
+                [],
+                $app[Plates\Engine::class]->render($template, $data)
+            );
+        });
+        $app['stacks.render_error']->push(function($error, $req, $next) {
+            $app = $next->getApp();
+            $status = (string) $error->status;
+
+            $paths = $app['plates.error_paths'];
+            if (isset($paths[$status])) {
+                $path = $paths[$status];
+            } else if (isset($paths['error'])) {
+                $path = $paths['error'];
+            } else {
+                return $next($error, $req);
+            }
+
+            return $next->response()->html(
+                500,
+                [],
+                $app[Plates\Engine::class]->render($path, [
+                    'error' => $error,
+                ])
+            );
+        });
+    }
+
     public function register(Cargo\Container $app) {
-        // $app['plates.views_path'] = null;
-        // $app['plates.ext'] = 'php';
-        // $app['plates'] = function($app) {
-        //     return new Plates\Engine($app['plates.views_path'], $app['plates.ext']);
-        // };
+        if (!isset($app['plates.ext'])) {
+            $app['plates.ext'] = 'php';
+        }
+        if (!isset($app['plates.error_paths'])) {
+            $app['plates.error_paths'] = [];
+        }
+        $app[Plates\Engine::class] = function($app) {
+            return new Plates\Engine($app['plates.views_path'], $app['plates.ext']);
+        };
+
+        Cargo\alias($app, Plates\Engine::class, 'plates');
     }
 }
-
-//     /** injects pimple into the request */
-//     function injectPlatesRequest($app) {
-//         return function($req, $next) use ($app) {
-//             $app['plates']->addData([
-//                 'request' => $req,
-//                 'app' => $app,
-//             ]);
-//             return $next($req);
-//         };
-//     }
-//
-//     /** Allows the returning of a 2-tuple of path and data */
-//     function platesMarshalResponse($app) {
-//         return function($result, $rf, $req, $next) use ($app) {
-//             $matches = isTuple($result, "string", "array");
-//             if (!$matches) {
-//                 return $next($result, $rf, $req, $next);
-//             }
-//
-//             list($template, $data) = $result;
-//             return $rf(200, [], $app['plates']->render($template, $data));
-//         };
-//     }
-//
-//     function platesNotFoundHandler($app, $path) {
-//         return function($req, $result, $next) use ($app, $path) {
-//             if (!$app['plates']->exists($path)) {
-//                 return $next($req, $result);
-//             }
-//
-//             $rf = $app['response_factory'];
-//             return $rf(404, [], $app['plates']->render($path, [
-//                 'dispatch_result' => $result,
-//             ]));
-//         };
-//     }
-//     function platesExceptionHandler($app, $path) {
-//         return function($req, $ex, $next) use ($app, $path) {
-//             if (!$app['plates']->exists($path)) {
-//                 return $next($req, $ex);
-//             }
-//
-//             $rf = $app['response_factory'];
-//             return $rf(500, [], $app['plates']->render($path, [
-//                 'exception' => $ex,
-//             ]));
-//         };
-//     }
-
-// private $ext;
-//     private $config;
-//
-//     public function __construct(array $config = []) {
-//         $this->config = $config + [
-//             '404' => 'errors/404',
-//             '500' => 'errors/500',
-//         ];
-//     }
-//
-//     public function with(Http\App $app) {
-//         $app->register(
-//             new PlatesServiceProvider(),
-//             Http\Util\arrayFromPrefix($this->config, 'plates.')
-//         );
-//
-//         $app['stacks.not_found_handler']->push(platesNotFoundHandler(
-//             $app,
-//             $this->config['404']
-//         ));
-//         $app['stacks.exception_handler']->push(platesExceptionHandler(
-//             $app,
-//             $this->config['500']
-//         ));
-//         $app['stacks.marshal_response']->push(platesMarshalResponse($app));
-//         $app->push(injectPlatesRequest($app));
-//     }

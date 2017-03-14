@@ -10,6 +10,7 @@ use Krak\Mw;
 use Zend\Diactoros;
 use Evenement;
 use Psr\Log;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony;
 
 use function Krak\Lava\Middleware\routeMw,
@@ -27,6 +28,10 @@ class LavaPackage implements Package, Cargo\ServiceProvider
                 ->unshift(invokeMw($app));
         });
 
+        $app['stacks.http']->push(Middleware\wrapExceptionsToErrors());
+        $app['stacks.routes']
+            ->push(Middleware\parseRequestJson())
+            ->push(Middleware\expectsContentType());
         $app['stacks.invoke_action']
             ->push(InvokeAction\callableInvokeAction(), 0, 'callable')
             ->push(InvokeAction\controllerMethodInvokeAction('@'), 0, 'controllerMethod')
@@ -36,7 +41,10 @@ class LavaPackage implements Package, Cargo\ServiceProvider
             ->push(MarshalResponse\streamMarshalResponse(), 1, 'stream')
             ->push(MarshalResponse\httpTupleMarshalResponse(), 1, 'httpTuple')
             ->push(MarshalResponse\redirectMarshalResponse(), 1, 'redirect')
-            ->push(MarshalResponse\stringMarshalResponse());
+            ->push(MarshalResponse\errorMarshalResponse(), 1, 'error')
+            ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
+        $app['stacks.render_error']
+            ->push(Error\textRenderError());
     }
 
     public function register(Cargo\Container $c) {
@@ -50,7 +58,7 @@ class LavaPackage implements Package, Cargo\ServiceProvider
 
             $store->store('json', new Http\ResponseFactory\JsonResponseFactory(
                 $rf,
-                $c['krak.http.response_factory.json_encode_options']
+                $c['json_encode_options']
             ));
             $store->store('html', new Http\ResponseFactory\HtmlResponseFactory($rf));
             $store->store('text', new Http\ResponseFactory\TextResponseFactory($rf));
@@ -66,9 +74,15 @@ class LavaPackage implements Package, Cargo\ServiceProvider
         $c[Diactoros\Response\EmitterInterface::class] = function() {
             return new Diactoros\Response\SapiEmitter();
         };
+        $c->factory(ServerRequestInterface::class, function() {
+            return Diactoros\ServerRequestFactory::fromGlobals();
+        });
         $c[Http\Server::class] = function($app) {
             return new Http\Server\DiactorosServer(
-                $app[Diactoros\Response\EmitterInterface::class]
+                $app[Diactoros\Response\EmitterInterface::class],
+                function() use ($app) {
+                    return $app[ServerRequestInterface::class];
+                }
             );
         };
         $c[Http\Route\RouteGroup::class] = function() {
@@ -98,9 +112,9 @@ class LavaPackage implements Package, Cargo\ServiceProvider
 
         $c['stacks.http'] = mw\stack();
         $c['stacks.routes'] = mw\stack();
-        $c['stacks.exception'] = mw\stack();
         $c['stacks.invoke_action'] = mw\stack();
         $c['stacks.marshal_response'] = mw\stack();
+        $c['stacks.render_error'] = mw\stack();
         $c->protect('compose', Mw\composer(
             new Middleware\LavaContext($c),
             Middleware\LavaLink::class
