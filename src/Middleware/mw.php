@@ -31,6 +31,7 @@ function parseRequestJson() {
         $ctype = $req->getHeaderLine('Content-Type');
 
         if ($ctype == 'application/json') {
+            $next->debug('Parsing request JSON');
             $req = $req->withParsedBody(json_decode($req->getBody(), true));
         }
 
@@ -38,12 +39,26 @@ function parseRequestJson() {
     };
 }
 
+function logRequestResponse() {
+    return function($req, $next) {
+        $next->info("Serving Request: {method} {uri}", [
+            'method' => $req->getMethod(),
+            'uri' => (string) $req->getUri()
+        ]);
+        $resp = $next($req);
+        $next->info("Returning Response: {status}", ['status' => $resp->getStatusCode()]);
+        return $resp;
+    };
+}
+
 function routeMw() {
     return function($req, $next) {
         $app = $next->getApp();
         $compiler = $app[Http\RouteCompiler::class];
+        $app->debug('Compiling Routes');
         $routes = $compiler->compileRoutes($app[Http\Route\RouteGroup::class], '/');
         $dispatcher = $app[Http\DispatcherFactory::class]->createDispatcher($routes);
+        $app->info('Dispatching Request: {path}', ['path' => $req->getUri()->getPath()]);
         $res = $dispatcher->dispatch($req);
         switch ($res->status_code) {
         case 404:
@@ -69,7 +84,7 @@ function routeMw() {
 function routingMiddlewareMw() {
     return function($req, $next) {
         $route = $req->getAttribute('_matched_route')->route;
-
+        $next->debug('Injecting route middleware');
         $middleware = Http\Route\attributesTreeAllAttributes($route, 'middleware');
         $next = $next->chains($middleware);
         return $next($req);
@@ -81,6 +96,7 @@ function wrapExceptionsToErrors() {
         try {
             return $next($req);
         } catch (\Exception $e) {
+            $next->debug('Wrapping caught exception into error');
             return $next->getApp()->renderError(Lava\Error::createFromException($e), $req);
         }
     };
@@ -94,11 +110,13 @@ function invokeMw() {
             Mw\guard('No invoke_action handler was able to invoke the given action.'),
             $app['stacks.invoke_action']
         ]);
+        $app->info("Invoking action");
         $resp = $invoke_action($matched_route, $req);
         if ($resp instanceof ResponseInterface) {
             return $resp;
         }
 
+        $app->debug('Marshaling Response');
         $marshal = $app->compose([
             Mw\guard('No marshal_response handler was able to marshal the given controller response. Check your controller response and make sure it can be used by the provided marshalers.'),
             $app['stacks.marshal_response']

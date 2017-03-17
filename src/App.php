@@ -8,9 +8,10 @@ use Krak\Http;
 use Krak\Mw;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Evenement\EventEmitterInterface;
 
-class App extends Cargo\Container\ContainerDecorator implements EventEmitterInterface
+class App extends Cargo\Container\ContainerDecorator implements EventEmitterInterface, LoggerInterface
 {
     use EventEmitterTrait;
     use LoggerTrait;

@@ -11,6 +11,10 @@ trait PathsTrait {
             return $this['base_path'];
         }
 
+        if ($this->has('paths.' . $path)) {
+            $path = $this['paths.'.$path];
+        }
+
         if (is_array($path)) {
             $path = implode(DIRECTORY_SEPARATOR, $path);
         }

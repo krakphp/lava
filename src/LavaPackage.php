@@ -34,7 +34,8 @@ class LavaPackage extends AbstractPackage
                 ->unshift(invokeMw($app));
         });
 
-        $app['stacks.http']->push(Middleware\wrapExceptionsToErrors());
+        $app['stacks.http']->push(Middleware\wrapExceptionsToErrors())
+            ->push(Middleware\logRequestResponse(), 1);
         $app['stacks.routes']
             ->push(Middleware\parseRequestJson())
             ->push(Middleware\expectsContentType());
@@ -112,8 +113,10 @@ class LavaPackage extends AbstractPackage
         $c['frozen'] = false;
         $c['debug'] = false;
         $c['version'] = '0.1.0';
+        $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
         $c['json_encode_options'] = 0;
+        $c['paths.log'] = ['var', 'log', 'app.log'];
 
         $c['stacks.http'] = mw\stack();
         $c['stacks.routes'] = mw\stack();
