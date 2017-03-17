@@ -5,6 +5,7 @@ namespace Krak\Lava;
 use ArrayObject;
 use Krak\Cargo;
 use Krak\Http;
+use Krak\Mw;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Evenement\EventEmitterInterface;
@@ -18,13 +19,12 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
     public function __construct($base_path = null, Cargo\Container $c = null) {
         parent::__construct($c ?: Cargo\container([], $auto_wire = true));
 
-        $this['version'] = '0.1.0';
-        $this['cli'] = php_sapi_name() === 'cli';
-        $this['base_path'] = rtrim($base_path, DIRECTORY_SEPARATOR);
-
-        $package = new LavaPackage();
-        Cargo\register($this, $package);
-        $package->with($this);
+        $this['base_path'] = $base_path ? rtrim($base_path, DIRECTORY_SEPARATOR) : null;
+        $this->protect('compose', Mw\composer(
+            new Middleware\LavaContext($this),
+            Middleware\LavaLink::class
+        ));
+        $this->with(new LavaPackage());
     }
 
     public function with($packages) {
@@ -33,18 +33,28 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
         }
 
         foreach ($packages as $package) {
-            $this['packages']->append($package);
-
+            if ($package instanceof Cargo\ServiceProvider) {
+                Cargo\register($this, $package);
+            }
+            if ($package instanceof \Closure) {
+                $package = new Package\ClosurePackage($package);
+            }
+            if ($package instanceof Package) {
+                $this['packages']->append($package);
+            }
             if ($package instanceof Bootstrap) {
                 $this->on(Events::BOOTSTRAP, [$package, 'bootstrap']);
             }
         }
     }
 
+    // invoke as middleware by starting this app
     public function __invoke(...$params) {
+        $this->bootstrap();
         $this->freeze();
-        $mw = $this['stacks.http'];
-        return $mw(...$params);
+        $handler = $this->compose([$this['stacks.http']]);
+        list($params) = Mw\splitArgs($params);
+        return $handler(...$params);
     }
 
     /** define the app routes */
@@ -90,7 +100,6 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
 
     public function serve() {
         $this->bootstrap();
-        $this->registerPackages();
         $this->freeze();
 
         $server = $this[Http\Server::class];
@@ -100,7 +109,10 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
         $this->terminate();
     }
 
-    public function bootstrap() {
+    public function bootstrap(callable $bootstrap = null) {
+        if ($bootstrap) {
+            return $this->on(Events::BOOTSTRAP, $bootstrap);
+        }
         if ($this['frozen']) {
             return;
         }
@@ -119,31 +131,5 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
 
     public function terminate() {
         $this->emit(Events::TERMINATE, [$this]);
-    }
-
-    public function registerPackages() {
-        if ($this['frozen']) {
-            return;
-        }
-
-        foreach ($this['packages'] as $package) {
-            $match = false;
-            if ($package instanceof Bootstrap) {
-                $match = true;
-            }
-            if ($package instanceof Cargo\ServiceProvider) {
-                Cargo\register($this, $package);
-                $match = true;
-            }
-            if ($package instanceof Package) {
-                $package->with($this);
-                $match = true;
-            }
-
-            if (!$match) {
-                $type = Util\typeToString($package);
-                throw new InvalidArgumentException("Packages must be an instance of Krak\Lava\{Package, Bootstrap} or Krak\Cargo\ServiceProvider. $type was given");
-            }
-        }
     }
 }

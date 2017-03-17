@@ -4,7 +4,7 @@ namespace Krak\Lava\Package;
 
 use Krak\Lava;
 use Krak\Cargo;
-use League\Plates;
+use League;
 
 class PlatesPackage extends Lava\AbstractPackage
 {
@@ -13,50 +13,9 @@ class PlatesPackage extends Lava\AbstractPackage
     }
 
     public function with(Lava\App $app) {
-        $app['stacks.http']->push(function($req, $next) {
-            $app = $next->getApp();
-            $plates = $app[Plates\Engine::class];
-            $plates->addData([
-                'request' => $req,
-                'app' => $app,
-            ]);
-            return $next($req);
-        });
-        $app['stacks.marshal_response']->push(function($result, $req, $next) {
-            $app = $next->getApp();
-            $matches = Lava\Util\isTuple($result, "string", "array");
-            if (!$matches) {
-                return $next($result, $req);
-            }
-
-            list($template, $data) = $result;
-            return $next->response()->html(
-                200,
-                [],
-                $app[Plates\Engine::class]->render($template, $data)
-            );
-        });
-        $app['stacks.render_error']->push(function($error, $req, $next) {
-            $app = $next->getApp();
-            $status = (string) $error->status;
-
-            $paths = $app['plates.error_paths'];
-            if (isset($paths[$status])) {
-                $path = $paths[$status];
-            } else if (isset($paths['error'])) {
-                $path = $paths['error'];
-            } else {
-                return $next($error, $req);
-            }
-
-            return $next->response()->html(
-                500,
-                [],
-                $app[Plates\Engine::class]->render($path, [
-                    'error' => $error,
-                ])
-            );
-        });
+        $app['stacks.http']->push(Plates\injectRequestIntoPlates());
+        $app['stacks.marshal_response']->push(Plates\platesMarshalResponse());
+        $app['stacks.render_error']->push(Plates\platesRenderError());
     }
 
     public function register(Cargo\Container $app) {
@@ -66,10 +25,10 @@ class PlatesPackage extends Lava\AbstractPackage
         if (!isset($app['plates.error_paths'])) {
             $app['plates.error_paths'] = [];
         }
-        $app[Plates\Engine::class] = function($app) {
-            return new Plates\Engine($app['plates.views_path'], $app['plates.ext']);
+        $app[League\Plates\Engine::class] = function($app) {
+            return new League\Plates\Engine($app['plates.views_path'], $app['plates.ext']);
         };
 
-        Cargo\alias($app, Plates\Engine::class, 'plates');
+        Cargo\alias($app, League\Plates\Engine::class, 'plates');
     }
 }

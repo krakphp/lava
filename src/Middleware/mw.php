@@ -4,6 +4,7 @@ namespace Krak\Lava\Middleware;
 
 use Krak\Lava;
 use Krak\Http;
+use Krak\Mw;
 use Psr\Http\Message\ResponseInterface;
 
 use function iter\reduce;
@@ -89,13 +90,19 @@ function invokeMw() {
     return function($req, $next) {
         $app = $next->getApp();
         $matched_route = $req->getAttribute('_matched_route');
-        $invoke_action = $app->compose([$app['stacks.invoke_action']]);
+        $invoke_action = $app->compose([
+            Mw\guard('No invoke_action handler was able to invoke the given action.'),
+            $app['stacks.invoke_action']
+        ]);
         $resp = $invoke_action($matched_route, $req);
         if ($resp instanceof ResponseInterface) {
             return $resp;
         }
 
-        $marshal = $app->compose([$app['stacks.marshal_response']]);
+        $marshal = $app->compose([
+            Mw\guard('No marshal_response handler was able to marshal the given controller response. Check your controller response and make sure it can be used by the provided marshalers.'),
+            $app['stacks.marshal_response']
+        ]);
         return $marshal($resp, $req);
     };
 }

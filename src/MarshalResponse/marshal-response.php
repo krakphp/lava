@@ -5,7 +5,9 @@ namespace Krak\Lava\MarshalResponse;
 use Krak\Http;
 use Krak\Lava;
 use Psr\Http\Message\Stream;
+
 use function Krak\Lava\Util\isTuple;
+use function Krak\Lava\Util\isStringy;
 
 /** determines if response matches an http tuple, if so, it will pass the body along
     to be marshalled and updates the response with the status and headers set.
@@ -17,8 +19,7 @@ function httpTupleMarshalResponse() {
     return function($res, $req, $next) {
         $valid_http_tuple = isTuple($res, 'integer', 'any') || isTuple($res, "integer", "array", "any");
 
-        $code = $res[0];
-        if (!$valid_http_tuple || !($code >= 100 && $code < 600)) {
+        if (!$valid_http_tuple || !($res[0] >= 100 && $res[0] < 600)) {
             return $next($res, $req);
         }
 
@@ -69,11 +70,15 @@ function redirectMarshalResponse($valid_redirects = [300, 301, 302, 303, 304, 30
 
 function stringMarshalResponse($html = true) {
     return function($result, $req, $next) use ($html) {
+        if (!isStringy($result)) {
+            return $next($result, $req);
+        }
+
         $headers = $html
             ? ['Content-Type' => 'text/html']
             : ['Content-Type' => 'text/plain'];
 
-        return $next->response(200, $headers, $result);
+        return $next->response(200, $headers, (string) $result);
     };
 }
 

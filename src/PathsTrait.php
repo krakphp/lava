@@ -4,6 +4,9 @@ namespace Krak\Lava;
 
 trait PathsTrait {
     public function path($path = '') {
+        if (!$this['base_path']) {
+            throw new \RuntimeException('No base_path was provided to this application at construction.');
+        }
         if (!$path) {
             return $this['base_path'];
         }
@@ -12,6 +15,6 @@ trait PathsTrait {
             $path = implode(DIRECTORY_SEPARATOR, $path);
         }
 
-        return $this['base_path'] . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR); 
+        return $this['base_path'] . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR);
     }
 }

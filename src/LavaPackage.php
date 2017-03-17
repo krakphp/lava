@@ -17,8 +17,14 @@ use function Krak\Lava\Middleware\routeMw,
     Krak\Lava\Middleware\routingMiddlewareMw,
     Krak\Lava\Middleware\invokeMw;
 
-class LavaPackage implements Package, Cargo\ServiceProvider
+class LavaPackage extends AbstractPackage
 {
+    public function bootstrap(App $app) {
+        foreach ($app['packages'] as $package) {
+            $package->with($app);
+        }
+    }
+
     public function with(App $app) {
         $app->on(Events::FREEZE, function($app) {
             $app['stacks.routes']->unshift(routingMiddlewareMw())
@@ -51,11 +57,9 @@ class LavaPackage implements Package, Cargo\ServiceProvider
         $c[Http\ResponseFactory::class] = function() {
             return new Http\ResponseFactory\DiactorosResponseFactory();
         };
-        $c['krak.http.response_factory.json_encode_options'] = 0;
         $c[Http\ResponseFactoryStore::class] = function($c) {
             $store = new Http\ResponseFactoryStore();
             $rf = $c[Http\ResponseFactory::class];
-
             $store->store('json', new Http\ResponseFactory\JsonResponseFactory(
                 $rf,
                 $c['json_encode_options']
@@ -102,22 +106,19 @@ class LavaPackage implements Package, Cargo\ServiceProvider
             return new Log\NullLogger();
         };
         $c->alias(Console\Application::class, 'Symfony\Component\Console\Application', 'console');
-        $c->alias(Evenement\EventEmitterInterface::class, 'emitter', 'event_emitter');
-        $c->alias(Log\LoggerInterface::class, 'log', 'logger');
 
         $c['packages'] = new ArrayObject();
         $c['commands'] = new ArrayObject();
-        $c['debug'] = false;
         $c['frozen'] = false;
+        $c['debug'] = false;
+        $c['version'] = '0.1.0';
+        $c['cli'] = PHP_SAPI === 'cli';
+        $c['json_encode_options'] = 0;
 
         $c['stacks.http'] = mw\stack();
         $c['stacks.routes'] = mw\stack();
         $c['stacks.invoke_action'] = mw\stack();
         $c['stacks.marshal_response'] = mw\stack();
         $c['stacks.render_error'] = mw\stack();
-        $c->protect('compose', Mw\composer(
-            new Middleware\LavaContext($c),
-            Middleware\LavaLink::class
-        ));
     }
 }

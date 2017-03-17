@@ -17,6 +17,11 @@ code: $error->code
 message: $error->message
 CONTENT;
 
+        $exception = $error->getException();
+        if ($exception && $next->getApp()['debug']) {
+            $content .= "\n" . $exception;
+        }
+
         return $next->response()->text(
             500,
             [],

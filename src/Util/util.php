@@ -22,3 +22,7 @@ function isTuple($tuple, ...$types) {
 function typeToString($type) {
     return is_object($type) ? get_class($type) : gettype($type);
 }
+
+function isStringy($var) {
+    return $var === null || is_scalar($var) || (is_object($var) && method_exists($var, '__toString'));
+}
