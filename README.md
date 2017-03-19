@@ -2,6 +2,10 @@
 
 Micro-framework with massive potential.
 
+## Installation
+
+Install with composer at `krak/lava`
+
 ## Usage
 
 ```php
