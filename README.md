@@ -1,6 +1,6 @@
 # Lava
 
-Micro-framework with macro potential.
+Micro-framework with massive potential.
 
 ## Usage
 

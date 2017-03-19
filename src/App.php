@@ -9,9 +9,9 @@ use Krak\Mw;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Evenement\EventEmitterInterface;
+use Krak\EventEmitter\EventEmitter;
 
-class App extends Cargo\Container\ContainerDecorator implements EventEmitterInterface, LoggerInterface
+class App extends Cargo\Container\ContainerDecorator implements EventEmitter, LoggerInterface
 {
     use EventEmitterTrait;
     use LoggerTrait;
@@ -118,7 +118,7 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
             return;
         }
 
-        $this->emit(Events::BOOTSTRAP, [$this]);
+        $this->emit(Events::BOOTSTRAP, $this);
     }
 
     public function freeze() {
@@ -126,11 +126,11 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitterInte
             return;
         }
 
-        $this->emit(Events::FREEZE, [$this]);
+        $this->emit(Events::FREEZE, $this);
         $this['frozen'] = true;
     }
 
     public function terminate() {
-        $this->emit(Events::TERMINATE, [$this]);
+        $this->emit(Events::TERMINATE, $this);
     }
 }

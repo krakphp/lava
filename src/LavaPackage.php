@@ -6,9 +6,10 @@ use ArrayObject;
 use Krak\Cargo;
 use Krak\Http;
 use Krak\AutoArgs;
+use Krak\EventEmitter;
+use Krak\Invoke;
 use Krak\Mw;
 use Zend\Diactoros;
-use Evenement;
 use Psr\Log;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony;
@@ -100,8 +101,10 @@ class LavaPackage extends AbstractPackage
         $c[Console\Application::class] = function($c) {
             return new Console\Application($c);
         };
-        $c[Evenement\EventEmitterInterface::class] = function() {
-            return new Evenement\EventEmitter();
+        $c[EventEmitter\EventEmitter::class] = function($c) {
+            $invoke = EventEmitter\emitterInvoke();
+            $invoke = new Invoke\ContainerInvoke($invoke, $c->toInterop());
+            return EventEmitter\emitter($invoke);
         };
         $c[Log\LoggerInterface::class] = function() {
             return new Log\NullLogger();
