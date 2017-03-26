@@ -46,18 +46,20 @@ In this example, we are creating a package that registers services, bootstraps t
     {
         public function boostrap(Lava\App $app) {
             // these will be invoked on bootstrap
-            // any initialization to the system should be done here, globals, filesystem, etc...
+            // any initialization to the system should be done here, globals, filesystem,
+            // adding event listeners, using any service
         }
 
         public function with(Lava\App $app) {
-            // these are invoked after the app is bootstraped and services have been
-            // registered. You can configure the application, add events, register more
+            // register services and configures the Application. These are invoked
+            // the moment they are registered on the app instance.
+            // You can configure the application, register more
             // services, add global or route middleware, define routes, add commands, etc...
         }
 
         public function register(Cargo\Container $c) {
-            // register services on the Application Container. These are invoked
-            // the moment they are registered on the app instance.
+            // only used for registering services, use this if you are registering services not related
+            // to the application
         }
     }
 
