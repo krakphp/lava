@@ -3,6 +3,7 @@
 namespace Krak\Lava\Package\ExceptionHandler;
 
 use Krak\Lava;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 function exceptionHandlerRenderError() {
     return function($error, $req, $next) {
@@ -10,6 +11,7 @@ function exceptionHandlerRenderError() {
         $handler = $app['symfony_exception_handler'];
 
         $exception = $error->getException() ?: new Lava\Error\ErrorException($error->message);
+        $exception = FlattenException::create($exception, $error->status);
 
         return $app->response()->html(
             500,
