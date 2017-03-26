@@ -37,11 +37,11 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitter, Lo
             if ($package instanceof Cargo\ServiceProvider) {
                 Cargo\register($this, $package);
             }
-            if ($package instanceof \Closure) {
-                $package = new Package\ClosurePackage($package);
-            }
             if ($package instanceof Package) {
-                $this['packages']->append($package);
+                $package->with($this);
+            }
+            if (is_callable($package)) {
+                $package($this);
             }
             if ($package instanceof Bootstrap) {
                 $this->on(Events::BOOTSTRAP, [$package, 'bootstrap']);

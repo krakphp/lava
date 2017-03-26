@@ -21,12 +21,6 @@ use function Krak\Lava\Middleware\routeMw,
 class LavaPackage extends AbstractPackage
 {
     public function bootstrap(App $app) {
-        foreach ($app['packages'] as $package) {
-            $package->with($app);
-        }
-    }
-
-    public function with(App $app) {
         $app->on(Events::FREEZE, function($app) {
             $app['stacks.routes']->unshift(routingMiddlewareMw())
                 ->push(routeMw($app));
@@ -34,7 +28,9 @@ class LavaPackage extends AbstractPackage
                 ->unshift($app['stacks.routes'])
                 ->unshift(invokeMw($app));
         });
+    }
 
+    public function with(App $app) {
         $app['stacks.http']->push(Middleware\wrapExceptionsToErrors())
             ->push(Middleware\logRequestResponse(), 1);
         $app['stacks.routes']
@@ -111,7 +107,6 @@ class LavaPackage extends AbstractPackage
         };
         $c->alias(Console\Application::class, 'Symfony\Component\Console\Application', 'console');
 
-        $c['packages'] = new ArrayObject();
         $c['commands'] = new ArrayObject();
         $c['frozen'] = false;
         $c['debug'] = false;
