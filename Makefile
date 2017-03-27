@@ -1,4 +1,7 @@
-.PHONY: test
+.PHONY: test doc
 
-make test:
+test:
 	./vendor/bin/peridot test
+
+doc:
+	cd doc; make html

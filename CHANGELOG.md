@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `handleRequest` to easily resolve requests into responses via the application
 - names to all middleware so that they can be manipulated easier
 - More tests for the separate packages
+- More documentation
 
 ### Changed
 

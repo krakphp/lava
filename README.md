@@ -15,8 +15,8 @@ use Krak\Lava;
 
 $app = new Lava\App();
 $app->routes(function($r) {
-    $r->get('/', function() {
-        return "Hello World!";
+    $r->get('/hello/{name}', function($name) {
+        return "Hello $name!";
     });
 });
 
