@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Semantics of Paths. Paths are now added into the application and default paths are provided to the users, but can be changed at any time.
+- Added documentation on paths
+
 ### Fixed
 
 - Fixed typo in composer.json suggest

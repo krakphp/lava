@@ -20,7 +20,9 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitter, Lo
     public function __construct($base_path = null, Cargo\Container $c = null) {
         parent::__construct($c ?: Cargo\container([], $auto_wire = true));
 
-        $this['base_path'] = $base_path ? rtrim($base_path, DIRECTORY_SEPARATOR) : null;
+        if ($base_path) {
+            $this->addPath('base', $base_path);
+        }
         $this->protect('compose', Mw\composer(
             new Middleware\LavaContext($this),
             Middleware\LavaLink::class
