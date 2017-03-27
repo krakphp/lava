@@ -11,7 +11,7 @@ $app->with([
 ]);
 $app->routes(function($r) {
     $r->get('/', function($app) {
-        return "The .env is located: " . $app->path('.env');
+        return "The .env is located: " . $app->basePath('.env');
     });
 });
 $app->serve();

@@ -9,7 +9,7 @@ use League;
 class PlatesPackage extends Lava\AbstractPackage
 {
     public function with(Lava\App $app) {
-        $app['plates.views_path'] = $app->path('views');
+        $app['plates.views_path'] = $app->viewsPath();
         $app['stacks.http']->push(Plates\injectRequestIntoPlates());
         $app['stacks.marshal_response']->push(Plates\platesMarshalResponse());
         $app['stacks.render_error']->push(Plates\platesRenderError());

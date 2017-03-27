@@ -16,7 +16,7 @@ class EnvPackage extends Lava\AbstractPackage
 
     public function bootstrap(Lava\App $app) {
         try {
-            $dotenv = new Dotenv\Dotenv($app->path());
+            $dotenv = new Dotenv\Dotenv($app->basePath());
             if ($this->overload) {
                 $dotenv->overload();
             } else {

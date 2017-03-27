@@ -49,6 +49,13 @@ class LavaPackage extends AbstractPackage
             ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
         $app['stacks.render_error']
             ->push(Error\textRenderError());
+
+        if ($app->hasPath('base')) {
+            $app->addPath('resources', $app->basePath('resources'));
+            $app->addPath('views', $app->resourcesPath('views'));
+            $app->addPath('logs', $app->basePath(['var', 'log']));
+            $app->addPath('config', $app->basePath('config'));
+        }
     }
 
     public function register(Cargo\Container $c) {
@@ -114,7 +121,6 @@ class LavaPackage extends AbstractPackage
         $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
         $c['json_encode_options'] = 0;
-        $c['paths.log'] = ['var', 'log', 'app.log'];
 
         $c['stacks.http'] = mw\stack();
         $c['stacks.routes'] = mw\stack();
