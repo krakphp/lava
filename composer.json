@@ -50,7 +50,7 @@
         "league/plates": "Needed for PlatesPackage to enable simple templating",
         "monolog/monolog": "Needed for MonologPackage to enable logging",
         "symfony/console": "Needed for running the console application.",
-        "symony/debug": "Needed for ExceptionHandlerPackage to enable nice exception handling",
+        "symfony/debug": "Needed for ExceptionHandlerPackage to enable nice exception handling",
         "vlucas/phpdotenv": "Needed for EnvPackage to load .env files at bootstrap"
     }
 }
