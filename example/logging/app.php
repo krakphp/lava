@@ -11,4 +11,6 @@ $app->routes(function($r) {
         return "Hi!";
     });
 });
+$app['monolog.rotate_log_files'] = false;
+$app['monolog.log_file_name'] = 'app.log';
 $app->serve();
