@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - More monolog options for configuration
 - Stacks Concern ability
 - Tests for concerns
+- error logging #7
 
 ### Changed
 

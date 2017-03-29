@@ -56,6 +56,7 @@ class Error
     public function getException() {
         return isset($this->payload['_exception']) ? $this->payload['_exception'] : null;
     }
+
     public static function createFromException(\Exception $e) {
         return new self(500, 'exception', $e->getMessage(), ['_exception' => $e]);
     }
