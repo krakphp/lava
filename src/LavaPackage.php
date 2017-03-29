@@ -25,7 +25,7 @@ class LavaPackage extends AbstractPackage
             $app->routesStack()->unshift(routingMiddlewareMw())
                 ->push(routeMw($app));
             $app->httpStack()
-                ->unshift($app['stacks.routes'])
+                ->unshift($app->routesStack())
                 ->unshift(invokeMw($app));
         });
     }
@@ -60,7 +60,8 @@ class LavaPackage extends AbstractPackage
             ->push(MarshalResponse\errorMarshalResponse(), 1, 'error')
             ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
         $app->renderErrorStack()
-            ->push(Error\textRenderError());
+            ->push(Error\textRenderError())
+            ->push(Error\logRenderError(), 1);
 
         if ($app->hasPath('base')) {
             $app->addPath('resources', $app->basePath('resources'));
