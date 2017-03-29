@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - More monolog options for configuration
+- Stacks Concern ability
+- Tests for concerns
 
 ### Changed
 
 - Semantics of Paths. Paths are now added into the application and default paths are provided to the users, but can be changed at any time.
 - Added documentation on paths
+- Moved app logic into separate concerns in the `Concerns` module.
 
 ### Fixed
 

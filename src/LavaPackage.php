@@ -22,32 +22,44 @@ class LavaPackage extends AbstractPackage
 {
     public function bootstrap(App $app) {
         $app->on(Events::FREEZE, function($app) {
-            $app['stacks.routes']->unshift(routingMiddlewareMw())
+            $app->routesStack()->unshift(routingMiddlewareMw())
                 ->push(routeMw($app));
-            $app['stacks.http']
+            $app->httpStack()
                 ->unshift($app['stacks.routes'])
                 ->unshift(invokeMw($app));
         });
     }
 
     public function with(App $app) {
-        $app['stacks.http']->push(Middleware\wrapExceptionsToErrors())
+        $app->protect('compose', Mw\composer(
+            new Middleware\LavaContext($app),
+            Middleware\LavaLink::class
+        ));
+
+        $app->addStack('http');
+        $app->addStack('routes');
+        $app->addStack('invoke_action');
+        $app->addStack('marshal_response');
+        $app->addStack('render_error');
+
+        $app->httpStack()->push(Middleware\wrapExceptionsToErrors())
             ->push(Middleware\logRequestResponse(), 1);
-        $app['stacks.routes']
-            ->push(Middleware\parseRequestJson())
-            ->push(Middleware\expectsContentType());
-        $app['stacks.invoke_action']
+        $app->routesStack()->fill([
+            Middleware\parseRequestJson(),
+            Middleware\expectsContentType()
+        ]);
+        $app->invokeActionStack()
             ->push(InvokeAction\callableInvokeAction(), 0, 'callable')
             ->push(InvokeAction\controllerMethodInvokeAction('@'), 0, 'controllerMethod')
             ->push(InvokeAction\prefixInvokeAction(), 0, 'prefix');
-        $app['stacks.marshal_response']
+        $app->marshalResponseStack()
             ->push(MarshalResponse\routeResponseFactoryMarshalResponse(), 1, 'routeResponseFactory')
             ->push(MarshalResponse\streamMarshalResponse(), 1, 'stream')
             ->push(MarshalResponse\httpTupleMarshalResponse(), 1, 'httpTuple')
             ->push(MarshalResponse\redirectMarshalResponse(), 1, 'redirect')
             ->push(MarshalResponse\errorMarshalResponse(), 1, 'error')
             ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
-        $app['stacks.render_error']
+        $app->renderErrorStack()
             ->push(Error\textRenderError());
 
         if ($app->hasPath('base')) {
@@ -121,11 +133,5 @@ class LavaPackage extends AbstractPackage
         $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
         $c['json_encode_options'] = 0;
-
-        $c['stacks.http'] = mw\stack();
-        $c['stacks.routes'] = mw\stack();
-        $c['stacks.invoke_action'] = mw\stack();
-        $c['stacks.marshal_response'] = mw\stack();
-        $c['stacks.render_error'] = mw\stack();
     }
 }
