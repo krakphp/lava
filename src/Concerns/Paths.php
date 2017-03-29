@@ -1,8 +1,8 @@
 <?php
 
-namespace Krak\Lava;
+namespace Krak\Lava\Concerns;
 
-trait PathsTrait {
+trait Paths {
     public function addPath($name, $path) {
         $this['paths.' . $name] = rtrim($path, DIRECTORY_SEPARATOR);
     }

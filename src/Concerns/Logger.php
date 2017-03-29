@@ -1,10 +1,10 @@
 <?php
 
-namespace Krak\Lava;
+namespace Krak\Lava\Concerns;
 
 use Psr\Log;
 
-trait LoggerTrait
+trait Logger
 {
     use Log\LoggerTrait;
 
