@@ -61,7 +61,7 @@ class LavaPackage extends AbstractPackage
             ->push(MarshalResponse\jsonMarshalResponse(), 0, 'json')
             ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
         $app->renderErrorStack()
-            ->push(Error\logRenderError(), 1, 'log');
+            ->push(Error\logRenderError(), 1, 'log')
             ->push(Error\textRenderError(), 0, 'text');
 
         if ($app->hasPath('base')) {
