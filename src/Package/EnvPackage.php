@@ -6,7 +6,7 @@ use Krak\Lava;
 use Krak\Cargo;
 use Dotenv;
 
-class EnvPackage extends Lava\AbstractPackage
+class EnvPackage implements Lava\Bootstrap
 {
     private $overload;
 

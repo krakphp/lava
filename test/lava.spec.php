@@ -8,14 +8,22 @@ describe('Krak Lava', function() {
         beforeEach(function() {
             $this->app = new Krak\Lava\App(__DIR__);
         });
-        describe('Http', function() {
-            require_once __DIR__ . '/concerns/http.php';
+        foreach (['Http', 'Paths', 'Stacks'] as $name) {
+            describe($name, function() use ($name) {
+                $name = strtolower($name);
+                require_once __DIR__ . "/concerns/$name.php";
+            });
+        }
+    });
+    describe('Package', function() {
+        beforeEach(function() {
+            $this->app = new Krak\Lava\App(__DIR__ . '/package');
         });
-        describe('Paths', function() {
-            require_once __DIR__ . '/concerns/paths.php';
-        });
-        describe('Stacks', function() {
-            require_once __DIR__ . '/concerns/stacks.php';
-        });
+        foreach (['REST', 'Plates', 'ExceptionHandler', 'Env'] as $name) {
+            describe($name . 'Package', function() use ($name) {
+                $name = strtolower($name);
+                require_once __DIR__ . "/package/$name.php";
+            });
+        }
     });
 });

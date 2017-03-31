@@ -60,10 +60,12 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitter, Lo
         if ($bootstrap) {
             return $this->on(Events::BOOTSTRAP, $bootstrap);
         }
-        if ($this['frozen']) {
+
+        if ($this['bootstrapped']) {
             return;
         }
 
         $this->emit(Events::BOOTSTRAP, $this);
+        $this['bootstrapped'] = true;
     }
 }

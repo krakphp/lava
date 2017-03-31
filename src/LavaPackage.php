@@ -58,10 +58,11 @@ class LavaPackage extends AbstractPackage
             ->push(MarshalResponse\httpTupleMarshalResponse(), 1, 'httpTuple')
             ->push(MarshalResponse\redirectMarshalResponse(), 1, 'redirect')
             ->push(MarshalResponse\errorMarshalResponse(), 1, 'error')
+            ->push(MarshalResponse\jsonMarshalResponse(), 0, 'json')
             ->push(MarshalResponse\stringMarshalResponse(), 0, 'string');
         $app->renderErrorStack()
-            ->push(Error\textRenderError())
-            ->push(Error\logRenderError(), 1);
+            ->push(Error\logRenderError(), 1, 'log');
+            ->push(Error\textRenderError(), 0, 'text');
 
         if ($app->hasPath('base')) {
             $app->addPath('resources', $app->basePath('resources'));
@@ -126,8 +127,10 @@ class LavaPackage extends AbstractPackage
             return new Log\NullLogger();
         };
         $c->alias(Console\Application::class, 'Symfony\Component\Console\Application', 'console');
+        $c->alias(ServerRequestInterface::class, 'request');
 
         $c['commands'] = new ArrayObject();
+        $c['bootstrapped'] = false;
         $c['frozen'] = false;
         $c['debug'] = false;
         $c['version'] = '0.1.0';

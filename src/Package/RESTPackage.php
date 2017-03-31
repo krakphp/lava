@@ -11,7 +11,7 @@ class RESTPackage extends Lava\AbstractPackage
 {
     public function with(Lava\App $app) {
         // default to json marshaling
-        $app['stacks.marshal_response']->push(Lava\MarshalResponse\jsonMarshalResponse());
-        $app['stacks.render_error']->push(REST\restRenderError());
+        $app->marshalResponseStack()->toTop('json');
+        $app->renderErrorStack()->push(REST\restRenderError(), 0, 'rest');
     }
 }

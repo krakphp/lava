@@ -10,9 +10,9 @@ class PlatesPackage extends Lava\AbstractPackage
 {
     public function with(Lava\App $app) {
         $app['plates.views_path'] = $app->viewsPath();
-        $app['stacks.http']->push(Plates\injectRequestIntoPlates());
-        $app['stacks.marshal_response']->push(Plates\platesMarshalResponse());
-        $app['stacks.render_error']->push(Plates\platesRenderError());
+        $app->httpStack()->push(Plates\injectRequestIntoPlates());
+        $app->marshalResponseStack()->push(Plates\platesMarshalResponse(), 0, 'plates');
+        $app->renderErrorStack()->push(Plates\platesRenderError(), 0, 'plates');
     }
 
     public function register(Cargo\Container $app) {

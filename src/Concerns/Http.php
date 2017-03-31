@@ -50,6 +50,13 @@ trait Http {
             ->withStatus($err->status);
     }
 
+    public function handleRequest(ServerRequestInterface $req = null) {
+        $this->bootstrap();
+        $this->freeze();
+        $handler = $this->compose([$this->httpStack()]);
+        return $handler($req ?: $this[ServerRequestInterface::class]);
+    }
+
     public function serve() {
         $this->bootstrap();
         $this->freeze();

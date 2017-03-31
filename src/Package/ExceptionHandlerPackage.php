@@ -23,7 +23,6 @@ class ExceptionHandlerPackage extends Lava\AbstractPackage
     }
 
     public function with(Lava\App $app) {
-        $app['stacks.render_error']
-            ->push(ExceptionHandler\exceptionHandlerRenderError());
+        $app->renderErrorStack()->push(ExceptionHandler\exceptionHandlerRenderError(), 0, 'exceptionHandler');
     }
 }

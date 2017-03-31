@@ -13,12 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Stacks Concern ability
 - Tests for concerns
 - error logging #7
+- `handleRequest` to easily resolve requests into responses via the application
+- names to all middleware so that they can be manipulated easier
+- More tests for the separate packages
 
 ### Changed
 
 - Semantics of Paths. Paths are now added into the application and default paths are provided to the users, but can be changed at any time.
 - Added documentation on paths
 - Moved app logic into separate concerns in the `Concerns` module.
+- Upgraded mw dependency to 0.5.1
+- Separated bootstrap from http freezing because the app can be used for more than just http.
 
 ### Fixed
 
