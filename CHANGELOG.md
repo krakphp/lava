@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2017-04-01
+
 ### Added
 
 - Class Middleware #15 - You can now register classes as stack handlers.
