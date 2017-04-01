@@ -32,8 +32,9 @@ More documentation coming soon! For now look over the examples and source code f
    :maxdepth: 2
 
    app
-   packages
    paths
+   stacks
+   packages
    events
    invoke-action
    marshal-response

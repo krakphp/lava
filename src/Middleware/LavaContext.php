@@ -11,7 +11,11 @@ class LavaContext extends Mw\Context\ContainerContext
 
     public function __construct(Lava\App $app) {
         $this->app = $app;
-        parent::__construct($app->toInterop());
+        $c = $app->toInterop();
+        parent::__construct(
+            $c,
+            Mw\containerAwareInvoke($c, Mw\methodInvoke('handle'))
+        );
     }
 
     public function getApp() {
