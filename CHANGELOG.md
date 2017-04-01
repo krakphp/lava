@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Class Middleware #15 - You can now register classes as stack handlers.
+- Console documentation
+- CommandDefinitionWrapper for a fluent interface for defining commands
+- Closure Commands and ``addCommand``
 
 ## [0.3.0] - 2017-03-31
 

@@ -34,6 +34,7 @@ More documentation coming soon! For now look over the examples and source code f
    app
    paths
    stacks
+   console
    packages
    events
    invoke-action
