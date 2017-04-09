@@ -8,7 +8,7 @@ Please have a look at the included packages:
 - :doc:`packages/lava`
 - :doc:`packages/plates`
 - :doc:`packages/rest`
-
+- :doc:`packages/validation`
 
 Registering Packages
 ====================
@@ -37,6 +37,7 @@ Creating Packages
 =================
 
 In this example, we are creating a package that registers services, bootstraps the app, and configured the app. A package doesn't need to implement all three interfaces for it to be registerd as package.
+
 .. code-block:: php
 
     use Krak\Lava;
