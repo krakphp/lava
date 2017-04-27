@@ -26,4 +26,7 @@ describe('Krak Lava', function() {
             });
         }
     });
+    describe('Middleware', function() {
+        require_once __DIR__ . '/middleware/mw.php';
+    });
 });

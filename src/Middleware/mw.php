@@ -4,6 +4,7 @@ namespace Krak\Lava\Middleware;
 
 use Krak\Lava;
 use Krak\Http;
+use Krak\HttpMessage;
 use Krak\Mw;
 use Psr\Http\Message\ResponseInterface;
 
@@ -17,8 +18,12 @@ function expectsContentType() {
             return $next($req);
         }
 
-        $ctype = $req->getHeader('Content-Type');
-        if (!$ctype || $ctype[0] != $expects) {
+        $ctype = HttpMessage\ContentTypeHeader::fromHttpMessage($req);
+        if (!$ctype) {
+            return $next($req);
+        }
+
+        if ($ctype->getContentType()->getMediaType() != $expects) {
             return $next->abort(415, 'unsupported_media_type', 'Expected ' . $expects)->render($req);
         }
 
@@ -28,9 +33,9 @@ function expectsContentType() {
 
 function parseRequestJson() {
     return function($req, $next) {
-        $ctype = $req->getHeaderLine('Content-Type');
+        $ctype = HttpMessage\ContentTypeHeader::fromHttpMessage($req);
 
-        if ($ctype == 'application/json') {
+        if ($ctype && $ctype->getContentType()->getMediaType() == 'application/json') {
             $next->debug('Parsing request JSON');
             $req = $req->withParsedBody(json_decode($req->getBody(), true));
         }
