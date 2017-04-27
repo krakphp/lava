@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Refactored Boostrap #19 to not use event emitter to allow wrapping
+
 ## [0.3.1] - 2017-04-01
 
 ### Added

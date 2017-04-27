@@ -58,14 +58,17 @@ class App extends Cargo\Container\ContainerDecorator implements EventEmitter, Lo
 
     public function bootstrap(callable $bootstrap = null) {
         if ($bootstrap) {
-            return $this->on(Events::BOOTSTRAP, $bootstrap);
+            return $this['bootstrappers']->append($bootstrap);
         }
 
         if ($this['bootstrapped']) {
             return;
         }
 
-        $this->emit(Events::BOOTSTRAP, $this);
+        foreach ($this['bootstrappers'] as $bootstrap) {
+            $bootstrap($this);
+        }
+
         $this['bootstrapped'] = true;
     }
 }

@@ -131,6 +131,7 @@ class LavaPackage extends AbstractPackage
 
         $c['commands'] = new ArrayObject();
         $c['bootstrapped'] = false;
+        $c['bootstrappers'] = new ArrayObject();
         $c['frozen'] = false;
         $c['debug'] = false;
         $c['version'] = '0.3.1';
