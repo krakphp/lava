@@ -8,6 +8,18 @@ use Krak\AutoArgs;
 use Krak\Cargo;
 use Psr\Http\Message\ServerRequestInterface;
 
+function _injectAppIntoHandler($app, $handler) {
+    if (is_array($handler) && $handler[0] instanceof Lava\Http\Controller) {
+        $handler[0]->setLava($app);
+    } else if ($handler instanceof \Closure) {
+        $controller = new Lava\Http\Controller();
+        $controller->setLava($app);
+        $handler = $handler->bindTo($controller, Lava\Http\Controller::class);
+    }
+
+    return $handler;
+}
+
 function callableInvokeAction() {
     return function(Http\Dispatcher\MatchedRoute $matched, ServerRequestInterface $req, $next) {
         $app = $next->getApp();
@@ -22,6 +34,8 @@ function callableInvokeAction() {
         if (!is_callable($handler)) {
             throw new \InvalidArgumentException('Route handler is not callable');
         }
+
+        $handler = _injectAppIntoHandler($app, $handler);
 
         return $auto_args->invoke($handler, [
             'objects' => [$matched, $req, $app],

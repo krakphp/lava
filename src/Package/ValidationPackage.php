@@ -6,7 +6,7 @@ use Krak\Cargo;
 use Krak\Lava;
 use Krak\Validation;
 
-class ValidationPackage extends Lava\AbstractPackage
+class ValidationPackage implements Cargo\ServiceProvider
 {
     public function register(Cargo\Container $c) {
         $c[Validation\Kernel::class] = new Validation\Kernel($c);
