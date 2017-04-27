@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.2 - 2017-04-27
+
 ### Added
 
 - Http Controller Convenience Methods #27
