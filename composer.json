@@ -39,6 +39,7 @@
     "require-dev": {
         "krak/job": "^0.3.0",
         "krak/php-inc": "^0.1.3",
+        "krak/validation": "^0.3.3",
         "league/plates": "^3.3",
         "monolog/monolog": "^1.22",
         "peridot-php/peridot": "^1.19",
@@ -49,6 +50,7 @@
     },
     "suggest": {
         "krak/job": "Needed for JobPackage to enable queued jobs",
+        "krak/validation": "Needed for ValidationPackage to enable validation",
         "league/plates": "Needed for PlatesPackage to enable simple templating",
         "monolog/monolog": "Needed for MonologPackage to enable logging",
         "symfony/console": "Needed for running the console application.",

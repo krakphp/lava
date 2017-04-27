@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Http Controller Convenience Methods #27
 - Validation Package #18
 - Aborts and Exceptions #21
 
 ### Fixed
 
 - expects and parseJson behavior now properly parse content types. #22
-- Refactored Boostrap #19 to not use event emitter to allow wrapping
+- Refactored Bootstrap #19 to not use event emitter to allow wrapping
 
 ## [0.3.1] - 2017-04-01
 

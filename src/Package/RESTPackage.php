@@ -7,7 +7,7 @@ use Krak\Cargo;
 
 use function iter\mapWithKeys, iter\toArray;
 
-class RESTPackage extends Lava\AbstractPackage
+class RESTPackage implements Lava\Package
 {
     public function with(Lava\App $app) {
         // default to json marshaling
