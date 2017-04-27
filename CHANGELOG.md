@@ -1,11 +1,6 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
-
-## [Unreleased]
+## Unreleased
 
 ### Added
 
@@ -18,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - expects and parseJson behavior now properly parse content types. #22
 - Refactored Bootstrap #19 to not use event emitter to allow wrapping
 
-## [0.3.1] - 2017-04-01
+## 0.3.1 - 2017-04-01
 
 ### Added
 
@@ -27,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - CommandDefinitionWrapper for a fluent interface for defining commands
 - Closure Commands and ``addCommand``
 
-## [0.3.0] - 2017-03-31
+## 0.3.0 - 2017-03-31
 
 ### Added
 
@@ -52,7 +47,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed typo in composer.json suggest
 
-## [0.2.0] - 2017-03-26
+## 0.2.0 - 2017-03-26
 
 ### Added
 
@@ -64,6 +59,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - ExceptionHandler package error renderer to integrate better with the Symfony debug library.
 - Slimmed down dependencies and moved them to composer suggests.
 
-## [0.1.0] - 2017-03-19
+## 0.1.0 - 2017-03-19
 
 Initial Release
