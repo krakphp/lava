@@ -10,7 +10,7 @@ function exceptionHandlerRenderError() {
         $app = $next->getApp();
         $handler = $app['symfony_exception_handler'];
 
-        $exception = $error->getException() ?: new Lava\Error\ErrorException($error->message);
+        $exception = $error->getException() ?: new Lava\Error\ErrorException($error);
         $exception = FlattenException::create($exception, $error->status);
 
         return $app->response()->html(

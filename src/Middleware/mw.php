@@ -116,7 +116,13 @@ function invokeMw() {
             $app['stacks.invoke_action']
         ]);
         $app->info("Invoking action");
-        $resp = $invoke_action($matched_route, $req);
+
+        try {
+            $resp = $invoke_action($matched_route, $req);
+        } catch (Lava\Error\ErrorException $error_exception) {
+            $resp = $error_exception->error;
+        }
+
         if ($resp instanceof ResponseInterface) {
             return $resp;
         }

@@ -58,6 +58,10 @@ class Error
     }
 
     public static function createFromException(\Exception $e) {
+        if ($e instanceof Error\ErrorException) {
+            return $e->error;
+        }
+
         return new self(500, 'exception', $e->getMessage(), ['_exception' => $e]);
     }
 }
