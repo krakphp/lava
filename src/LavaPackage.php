@@ -133,7 +133,7 @@ class LavaPackage extends AbstractPackage
         $c['bootstrapped'] = false;
         $c['frozen'] = false;
         $c['debug'] = false;
-        $c['version'] = '0.1.0';
+        $c['version'] = '0.3.1';
         $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
         $c['json_encode_options'] = 0;
