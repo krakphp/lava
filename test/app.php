@@ -2,6 +2,7 @@
 
 use Krak\Lava;
 use Krak\Cargo;
+use Krak\EventEmitter\EventEmitter;
 
 beforeEach(function() {
     $this->app = new Lava\App(__DIR__);
@@ -38,6 +39,27 @@ describe('->with', function() {
         };
         $this->app->with($package);
         assert($this->app->has('a') === false);
+        $this->app->bootstrap();
+        assert($this->app['a'] == 5);
+    });
+});
+describe('->bootstrap', function() {
+    it('allows for the Event Emitters to be extended', function() {
+        $package = new class() extends Lava\AbstractPackage {
+            public function bootstrap(Lava\App $app) {
+                $app['a'] = 5;
+            }
+            public function with(Lava\App $app) {
+                $app->wrap(EventEmitter::class, function($emitter) {
+                    return $emitter;
+                });
+            }
+        };
+
+        $this->app->bootstrap(function($app) {
+            $app['a'] = 1;
+        });
+        $this->app->with($package);
         $this->app->bootstrap();
         assert($this->app['a'] == 5);
     });
