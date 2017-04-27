@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Validation Package #18
+- Aborts and Exceptions #21
 
 ### Fixed
 

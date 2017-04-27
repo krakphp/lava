@@ -22,6 +22,10 @@ function app($service, callable $create, $name = 'default') {
     return $app;
 }
 
+function abort(...$args) {
+    throw new Error\ErrorException(new Error(...$args));
+}
+
 function error(...$args) {
     return new Error(...$args);
 }
