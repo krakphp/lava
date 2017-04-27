@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Validation Package #18
+
 ### Fixed
 
 - expects and parseJson behavior now properly parse content types. #22
