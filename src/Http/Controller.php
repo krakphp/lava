@@ -30,10 +30,6 @@ class Controller
     }
 
     public function validate($data, $validators) {
-        if ($data instanceof ServerRequestInterface) {
-            $data = array_merge($data->getQueryParams(), $data->getParsedBody());
-        }
-
         $validator = $this->lava['validation']->make($validators);
         $violations = $validator->validate($data);
 

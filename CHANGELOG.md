@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Removed Controller validate merging of server request parameters
+
 ## 0.3.2 - 2017-04-27
 
 ### Added
