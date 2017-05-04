@@ -3,9 +3,10 @@
 namespace Krak\Lava\Middleware;
 
 use Krak\Mw;
+use Krak\Http\Middleware\HttpLink;
 use Psr\Log;
 
-class LavaLink extends Mw\Link\ContainerLink implements Log\LoggerInterface
+class LavaLink extends HttpLink implements Log\LoggerInterface
 {
     use Log\LoggerTrait;
 
@@ -15,10 +16,6 @@ class LavaLink extends Mw\Link\ContainerLink implements Log\LoggerInterface
 
     public function abort(...$args) {
         return $this->getApp()->abort(...$args);
-    }
-
-    public function response(...$args) {
-        return $this->getApp()->response(...$args);
     }
 
     public function log($level, $message, array $context = array()) {
