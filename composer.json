@@ -28,7 +28,7 @@
         "krak/auto-args": "^0.3.0",
         "krak/cargo": "^0.2.0",
         "krak/event-emitter": "^0.1.0",
-        "krak/http": "^0.3.2",
+        "krak/http": "^0.3.3",
         "krak/http-message": "^0.1.3",
         "krak/mw": "^0.5.1",
         "nikic/fast-route": "^1.2",
