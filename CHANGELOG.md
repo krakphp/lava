@@ -5,6 +5,12 @@
 ### Fixed
 
 - Removed Controller validate merging of server request parameters
+- Http Concern Bug #31
+
+### Added
+
+- Concerns\Http now uses the Http\Concerns\Response trait
+- Middleware\LavaLink now extends the Http\Middleware\HttpLink
 
 ## 0.3.2 - 2017-04-27
 

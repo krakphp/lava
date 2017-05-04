@@ -6,17 +6,21 @@ use Krak\Http\Route;
 use Krak\Http\ResponseFactoryStore;
 use Krak\Http\ResponseFactory;
 use Krak\Http\Server;
+use Krak\Http\Concerns\Response;
 use Krak\Lava;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use function Krak\Mw\splitArgs;
 
 trait Http {
+    use Response;
+
     // invoke as middleware by starting this app
     public function __invoke(...$params) {
         $this->bootstrap();
         $this->freeze();
         $handler = $this->compose([$this->httpStack()]);
-        list($params) = Mw\splitArgs($params);
+        list($params) = splitArgs($params);
         return $handler(...$params);
     }
 
@@ -26,14 +30,6 @@ trait Http {
             return $def($routes, $app) ?: $routes;
         });
         return $this;
-    }
-
-    public function response(...$args) {
-        if (count($args) == 0) {
-            return $this[ResponseFactoryStore::class];
-        }
-
-        return $this[ResponseFactory::class]->createResponse(...$args);
     }
 
     public function emitResponse(ResponseInterface $resp) {
