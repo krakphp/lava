@@ -131,3 +131,13 @@ Command Output
         $io = $this->io(); // returns instance of symfony console style.
         $io->success("Great!");
     }
+
+Extending the Console
+---------------------
+
+.. code-block:: php
+
+$app->wrap('console', function($console) {
+    $console->mergeHelperSets(new CustomHelperSet());
+    return $console;
+});
