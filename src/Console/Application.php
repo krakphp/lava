@@ -36,4 +36,12 @@ class Application extends Console\Application
 
         return parent::add($command);
     }
+
+    public function mergeHelperSets(...$sets) {
+        foreach ($sets as $helper_set) {
+            foreach ($helper_set as $key => $helper) {
+                $this->getHelperSet()->set($helper, $key);
+            }
+        }
+    }
 }
