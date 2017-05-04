@@ -31,10 +31,12 @@ class LavaPackage extends AbstractPackage
     }
 
     public function with(App $app) {
-        $app->protect('compose', Mw\composer(
-            new Middleware\LavaContext($app),
-            Middleware\LavaLink::class
-        ));
+        $app['compose'] = function($app) {
+            return Mw\composer(
+                new Middleware\LavaContext($app),
+                Middleware\LavaLink::class
+            );
+        };
 
         $app->addStack('http');
         $app->addStack('routes');
@@ -73,44 +75,8 @@ class LavaPackage extends AbstractPackage
     }
 
     public function register(Cargo\Container $c) {
-        $c[Http\ResponseFactory::class] = function() {
-            return new Http\ResponseFactory\DiactorosResponseFactory();
-        };
-        $c[Http\ResponseFactoryStore::class] = function($c) {
-            $store = new Http\ResponseFactoryStore();
-            $rf = $c[Http\ResponseFactory::class];
-            $store->store('json', new Http\ResponseFactory\JsonResponseFactory(
-                $rf,
-                $c['json_encode_options']
-            ));
-            $store->store('html', new Http\ResponseFactory\HtmlResponseFactory($rf));
-            $store->store('text', new Http\ResponseFactory\TextResponseFactory($rf));
-
-            return $store;
-        };
-        $c[Http\RouteCompiler::class] = function() {
-            return new Http\Route\RecursiveRouteCompiler();
-        };
-        $c[Http\DispatcherFactory::class] = function() {
-            return new Http\Dispatcher\FastRoute\FastRouteDispatcherFactory();
-        };
-        $c[Diactoros\Response\EmitterInterface::class] = function() {
-            return new Diactoros\Response\SapiEmitter();
-        };
-        $c->factory(ServerRequestInterface::class, function() {
-            return Diactoros\ServerRequestFactory::fromGlobals();
-        });
-        $c[Http\Server::class] = function($app) {
-            return new Http\Server\DiactorosServer(
-                $app[Diactoros\Response\EmitterInterface::class],
-                function() use ($app) {
-                    return $app[ServerRequestInterface::class];
-                }
-            );
-        };
-        $c[Http\Route\RouteGroup::class] = function() {
-            return new Http\Route\RouteGroup('');
-        };
+        $c->register(new Http\HttpServiceProvider());
+        $c->alias('krak.http.response_factory.json_encode_options', 'json_encode_options');
 
         $c[AutoArgs\AutoArgs::class] = function() {
             return new AutoArgs\AutoArgs();
@@ -127,7 +93,7 @@ class LavaPackage extends AbstractPackage
             return new Log\NullLogger();
         };
         $c->alias(Console\Application::class, 'Symfony\Component\Console\Application', 'console');
-        $c->alias(ServerRequestInterface::class, 'request');
+
 
         $c['commands'] = new ArrayObject();
         $c['bootstrapped'] = false;
@@ -137,6 +103,5 @@ class LavaPackage extends AbstractPackage
         $c['version'] = '0.3.2';
         $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
-        $c['json_encode_options'] = 0;
     }
 }

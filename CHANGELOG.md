@@ -12,6 +12,7 @@
 - Concerns\Http now uses the Http\Concerns\Response trait
 - Middleware\LavaLink now extends the Http\Middleware\HttpLink
 - Console\Application::mergeHelperSets #33
+- LavaPackage now uses the HttpServiceProvider to define services
 
 ## 0.3.2 - 2017-04-27
 
