@@ -100,7 +100,7 @@ class LavaPackage extends AbstractPackage
         $c['bootstrappers'] = new ArrayObject();
         $c['frozen'] = false;
         $c['debug'] = false;
-        $c['version'] = '0.3.2';
+        $c['version'] = '0.3.3';
         $c['name'] = 'Lava';
         $c['cli'] = PHP_SAPI === 'cli';
     }
