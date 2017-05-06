@@ -34,7 +34,7 @@ describe('Controller', function() {
             $this->app->with(new Lava\Package\ValidationPackage());
             $this->app->routes(function($routes) {
                 $routes->get('/', function($req) {
-                    $this->validate($req, [
+                    $this->validateQuery($req, [
                         'a' => 'string',
                     ]);
                 });

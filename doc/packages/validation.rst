@@ -27,3 +27,25 @@ To configure the validation kernel, you simply just access the validation kernel
     $app['validation']->context([
         'a' => 1,
     ]);
+
+Middleware
+----------
+
+ConvertViolationExceptionMiddleware
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This middleware will convert catch any thrown ``ViolationException`` and will convert into an error response like ``Controller::validate`` will.
+
+.. code-block::
+
+    <?php
+
+    // in some service function
+    $validator = $this->validation->make('string')
+    $violation = $validator->validate(1);
+
+    if ($violation) {
+        $violation->abort()
+    }
+
+This is very useful if you want to add more domain validation in your model layer.
