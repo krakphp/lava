@@ -36,7 +36,7 @@ ConvertViolationExceptionMiddleware
 
 This middleware will convert catch any thrown ``ViolationException`` and will convert into an error response like ``Controller::validate`` will.
 
-.. code-block::
+.. code-block:: php
 
     <?php
 
