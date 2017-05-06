@@ -19,7 +19,7 @@ describe('Krak Lava', function() {
         beforeEach(function() {
             $this->app = new Krak\Lava\App(__DIR__ . '/package');
         });
-        foreach (['REST', 'Plates', 'ExceptionHandler', 'Env'] as $name) {
+        foreach (['REST', 'Plates', 'ExceptionHandler', 'Env', 'Validation'] as $name) {
             describe($name . 'Package', function() use ($name) {
                 $name = strtolower($name);
                 require_once __DIR__ . "/package/$name.php";
