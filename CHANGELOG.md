@@ -5,6 +5,7 @@
 ### Added
 
 - Special Handling for Violation Exceptions #36
+- Better Exception Handling for http middleware #38
 
 ## 0.3.3 - 2017-05-03
 
