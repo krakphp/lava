@@ -41,7 +41,7 @@ CONTENT;
         }
 
         return $next->response()->text(
-            500,
+            $error->status,
             [],
             $content
         );

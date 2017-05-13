@@ -50,3 +50,13 @@ describe('#parseJson', function() {
         assert($resp->getStatusCode() == 200);
     });
 });
+describe('RenderHttpExceptionsLink', function() {
+    it('renders http stack exceptions', function() {
+        $this->app->httpStack()->push(function($req, $next) {
+            throw new \Exception('rendered');
+            return $next($req);
+        });
+        $resp = $this->app->handleRequest();
+        assert($resp->getStatusCode() == 500 && $resp->getBody() == "code: exception\nmessage: rendered");
+    });
+});

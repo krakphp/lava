@@ -4,13 +4,13 @@ namespace Krak\Lava\Package;
 
 use Krak\Cargo;
 use Krak\Lava;
-use Krak\Lava\Package\Validation\ConvertViolationExceptionMiddleware;
+use Krak\Lava\Package\Validation\ConvertViolationExceptionRenderError;
 use Krak\Validation;
 
 class ValidationPackage implements Cargo\ServiceProvider, Lava\Package
 {
     public function with(Lava\App $app) {
-        $app->httpStack()->unshift(ConvertViolationExceptionMiddleware::class);
+        $app->renderErrorStack()->push(ConvertViolationExceptionRenderError::class, 1, 'convert_violations');
     }
 
     public function register(Cargo\Container $c) {

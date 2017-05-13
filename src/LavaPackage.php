@@ -37,6 +37,12 @@ class LavaPackage extends AbstractPackage
                 Middleware\LavaLink::class
             );
         };
+        $app['http_compose'] = function($app) {
+            return Mw\composer(
+                new Middleware\LavaContext($app),
+                Middleware\RenderHttpExceptionsLink::class
+            );
+        };
 
         $app->addStack('http');
         $app->addStack('routes');
@@ -44,8 +50,7 @@ class LavaPackage extends AbstractPackage
         $app->addStack('marshal_response');
         $app->addStack('render_error');
 
-        $app->httpStack()->push(Middleware\wrapExceptionsToErrors())
-            ->push(Middleware\logRequestResponse(), 1);
+        $app->httpStack()->push(Middleware\logRequestResponse(), 1);
         $app->routesStack()->fill([
             Middleware\parseRequestJson(),
             Middleware\expectsContentType()
@@ -93,7 +98,6 @@ class LavaPackage extends AbstractPackage
             return new Log\NullLogger();
         };
         $c->alias(Console\Application::class, 'Symfony\Component\Console\Application', 'console');
-
 
         $c['commands'] = new ArrayObject();
         $c['bootstrapped'] = false;

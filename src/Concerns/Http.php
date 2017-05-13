@@ -19,7 +19,8 @@ trait Http {
     public function __invoke(...$params) {
         $this->bootstrap();
         $this->freeze();
-        $handler = $this->compose([$this->httpStack()]);
+        $compose = $this['http_compose'];
+        $handler = $compose([$this->httpStack()]);
         list($params) = splitArgs($params);
         return $handler(...$params);
     }
@@ -42,14 +43,14 @@ trait Http {
 
     public function renderError(Lava\Error $err, ServerRequestInterface $req = null) {
         $render = $this->compose([$this->renderErrorStack()]);
-        return $render($err, $req ?: $this[ServerRequestInterface::class])
-            ->withStatus($err->status);
+        return $render($err, $req ?: $this[ServerRequestInterface::class]);
     }
 
     public function handleRequest(ServerRequestInterface $req = null) {
         $this->bootstrap();
         $this->freeze();
-        $handler = $this->compose([$this->httpStack()]);
+        $compose = $this['http_compose'];
+        $handler = $compose([$this->httpStack()]);
         return $handler($req ?: $this[ServerRequestInterface::class]);
     }
 
@@ -58,7 +59,8 @@ trait Http {
         $this->freeze();
 
         $server = $this[Server::class];
-        $handler = $this->compose([$this->httpStack()]);
+        $compose = $this['http_compose'];
+        $handler = $compose([$this->httpStack()]);
         $server->serve($handler);
 
         $this->terminate();
