@@ -49,7 +49,7 @@ function platesRenderError() {
         }
 
         return $next->response()->html(
-            500,
+            $error->status,
             [],
             $app[Plates\Engine::class]->render($path, [
                 'error' => $error,

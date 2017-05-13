@@ -67,6 +67,7 @@ function routeMw() {
         $res = $dispatcher->dispatch($req);
         switch ($res->status_code) {
         case 404:
+
             return $app->abort(404, 'not_found', 'Page not found.', [
                 'endpoint' => $req->getUri()->getPath(),
                 'method' => $req->getMethod(),

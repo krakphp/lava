@@ -14,7 +14,7 @@ function exceptionHandlerRenderError() {
         $exception = FlattenException::create($exception, $error->status);
 
         return $app->response()->html(
-            500,
+            $error->status,
             [],
             $handler->getHtml($exception)
         );
