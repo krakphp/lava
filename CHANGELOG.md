@@ -7,6 +7,10 @@
 - Added consoleLogger func in Console Commands #43
 - Added extended console documentation
 
+## Fixed
+
+- Plates views path is now lazy loaded. #44
+
 ## 0.3.4 - 2017-05-12
 
 ### Added

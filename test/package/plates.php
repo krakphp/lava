@@ -3,8 +3,8 @@
 use Krak\Lava\Package;
 
 it('allows view response marshaling', function() {
-    $this->app->addPath('views', __DIR__ . '/Resources/plates');
     $this->app->with(new Package\PlatesPackage());
+    $this->app->addPath('views', __DIR__ . '/Resources/plates');
     $this->app['plates.ext'] = 'phtml';
     $this->app->routes(function($r) {
         $r->get('/', function() {
