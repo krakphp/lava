@@ -31,6 +31,10 @@ class Command extends Console\Command\Command
         return $this->io;
     }
 
+    public function consoleLogger(array $verbosityLevelMap = [], array $formatLevelMap = []) {
+        return new Console\Logger\ConsoleLogger($this->output, $verbosityLevelMap, $formatLevelMap);
+    }
+
     protected function configure() {
         if (!method_exists($this, 'define')) {
             throw new \LogicException('Command does not contain the define method');

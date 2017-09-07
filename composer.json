@@ -38,6 +38,7 @@
         "zendframework/zend-diactoros": "^1.3"
     },
     "require-dev": {
+        "eloquent/phony-peridot": "^1.0",
         "krak/job": "^0.3.0",
         "krak/php-inc": "^0.1.3",
         "krak/validation": "^0.3.6",

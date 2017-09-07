@@ -132,12 +132,116 @@ Command Output
         $io->success("Great!");
     }
 
+You can also grab the Symfony PSR-3 Console Logger with:
+
+.. code-block:: php
+
+    public function handle() {
+        $logger = $this->consoleLogger();
+        $logger->debug("foo");
+    }
+
 Extending the Console
 ---------------------
 
 .. code-block:: php
 
-$app->wrap('console', function($console) {
-    $console->mergeHelperSets(new CustomHelperSet());
-    return $console;
-});
+    $app->wrap('console', function($console) {
+        $console->mergeHelperSets(new CustomHelperSet());
+        return $console;
+    });
+
+Command Api
+-----------
+
+These are all of the functions that are available from inside of the command class.
+
+``getApp()``
+~~~~~~~~~~~~
+
+Returns the lava application instance
+
+``io()``
+~~~~~~~~
+
+Returns a cached instance of ``Symfony\Component\Console\Style\SymfonyStyle``
+
+``consoleLogger(array $verbosityLevelMap = [], array $formatLevelMap = [])``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creates a new instance of the ``Symfony\Component\Console\Logger\ConsoleLogger`` and returns it. The parameters are simply passed on through to the console logger constructor.
+
+``input()``
+~~~~~~~~~~~
+
+Returns the symfony input instance.
+
+``argument($name)``
+~~~~~~~~~~~~~~~~~~~
+
+Returns an argument by name.
+
+``option($name)``
+~~~~~~~~~~~~~~~~~
+
+Returns an option by name.
+
+``output()``
+~~~~~~~~~~~~
+
+Returns the the symfony output instance
+
+``writeln(...$args)``
+~~~~~~~~~~~~~~~~~~~~~
+
+Alias of ``$this->output()->writeln(...$args)``
+
+``write(...$args)``
+~~~~~~~~~~~~~~~~~~~
+
+Alias of ``$this->output()->write(...$args)``
+
+
+``writeStyled($style, $message)``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Writes a styled message into the console output. A call like:
+
+.. code-block:: php
+
+    $this->writeStyled('info', 'message');
+    $this->writeStyled('comment', ['message1', 'message2']);
+
+is equivalent to:
+
+.. code-block:: php
+
+    $this->output->writeln('<info>message</info>');
+    $this->output->writeln(['<comment>message1</comment>', '<comment>message2</comment>']);
+
+:style:
+    - type: string
+    - example: ``"info"``
+:message:
+    - type: string|array[string]
+    - example: ``"message"``
+
+``info($message)``
+~~~~~~~~~~~~~~~~~~
+
+Writes an info styled message to the output.
+
+``comment($message)``
+~~~~~~~~~~~~~~~~~~~~~
+
+Writes an comment styled message to the output.
+
+``question($message)``
+~~~~~~~~~~~~~~~~~~~~~~
+
+Writes an question styled message to the output.
+
+``error($message)``
+~~~~~~~~~~~~~~~~~~~
+
+Writes an error styled message to the output.
