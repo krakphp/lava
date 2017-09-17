@@ -47,7 +47,7 @@ function httpTupleMarshalResponse() {
 
 function streamMarshalResponse() {
     return function($result, $req, $next) {
-        if (!$result instanceof Stream || !is_resource($result)) {
+        if (!$result instanceof Stream && !is_resource($result)) {
             return $next($result, $req);
         }
 
