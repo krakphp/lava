@@ -10,6 +10,7 @@
 ## Fixed
 
 - Plates views path is now lazy loaded. #44
+- streamMarshalResponse now actually marshals streams #55
 
 ## 0.3.4 - 2017-05-12
 
